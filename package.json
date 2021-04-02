@@ -1,0 +1,19 @@
+{
+  "name": "robot-controller",
+  "version": "1.0.0",
+  "description": "Telepresence robit UI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insert-username/robot-controller.git"
+  },
+  "author": "insert-username",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/insert-username/robot-controller/issues"
+  },
+  "homepage": "https://github.com/insert-username/robot-controller#readme"
+}
