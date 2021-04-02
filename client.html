@@ -6,30 +6,50 @@
 
 <body>
     <div>
-        <ul id="log">
-        </ul>
+        <div style="float: left;">
+            <h2>Client</h2>
+            <ul id="clientLog">
+            </ul>
+        </div>
+
+        <div style="float: left;">
+            <h2>Drone</h2>
+            <ul id="droneLog">
+            </ul>
+        </div>
     </div>
 
     <script type="text/javascript">
         window.onload = function (e) {
             console.log("started");
-            var logElement = document.getElementById("log");
+            var clientLogElement = document.getElementById("clientLog");
+            var droneLogElement = document.getElementById("droneLog");
 
-            var appendLog = function(message) {
+            var appendLog = function(message, logElement) {
                 logElement.insertAdjacentHTML('beforeend', '<li>' + message + '</li>');
             };
 
-            var socket = new WebSocket("ws:localhost:8080");
-            socket.onopen = function (event) {
-                appendLog("connection opened");
+            var socketClientOut = new WebSocket("ws:localhost:8080");
+            socketClientOut.onopen = function (event) {
+                appendLog("connection opened", clientLogElement);
+            };
+            socketClientOut.onmessage = function (event) {
+                appendLog("Received: " + event.data, clientLogElement);
             };
 
-            socket.onmessage = function (event) {
-                appendLog(event.data);
+
+            var socketDroneIn = new WebSocket("ws:localhost:8081");
+            socketDroneIn.onopen = function (event) {
+                appendLog("drone in connection opened", droneLogElement);
+            };
+            socketDroneIn.onmessage = function (event) {
+                appendLog("Received: " + event.data, droneLogElement);
             };
 
             setInterval(function() {
-                socket.send("client message " + Math.random());
+                var msg = "" + Math.random();
+                appendLog("Sending: " + msg, clientLogElement);
+                socketClientOut.send(msg);
             }, 2000);
         };
     </script>
