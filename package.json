@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/insert-username/robot-controller/issues"
   },
-  "homepage": "https://github.com/insert-username/robot-controller#readme"
+  "homepage": "https://github.com/insert-username/robot-controller#readme",
+  "dependencies": {
+    "ws": "^7.4.4"
+  }
 }
