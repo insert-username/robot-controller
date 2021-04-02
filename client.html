@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <div>
+        <ul id="log">
+        </ul>
+    </div>
+
+    <script type="text/javascript">
+        window.onload = function (e) {
+            console.log("started");
+            var logElement = document.getElementById("log");
+
+            var appendLog = function(message) {
+                logElement.insertAdjacentHTML('beforeend', '<li>' + message + '</li>');
+            };
+
+            var socket = new WebSocket("ws:localhost:8080");
+            socket.onopen = function (event) {
+                appendLog("connection opened");
+            };
+
+            socket.onmessage = function (event) {
+                appendLog(event.data);
+            };
+
+            setInterval(function() {
+                socket.send("client message " + Math.random());
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
