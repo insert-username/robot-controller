@@ -58,6 +58,9 @@
             }
         }
 
+        //const url = "ws:localhost:8080";
+        const url = "ws:limitless-wildwood-48190.herokuapp.com"
+
         window.onload = function (e) {
             console.log("started");
             var clientLogElement = document.getElementById("clientLog");
@@ -69,7 +72,7 @@
                 parentElement.scrollTo(0, parentElement.scrollHeight);
             };
 
-            var socketClientOut = new WebSocket("ws:localhost:8080");
+            var socketClientOut = new WebSocket(url);
             socketClientOut.onopen = function (event) {
                 appendLog("connection opened", clientLogElement);
             };
@@ -78,7 +81,7 @@
             };
 
 
-            var socketDroneIn = new WebSocket("ws:localhost:8081");
+            var socketDroneIn = new WebSocket(url);
             socketDroneIn.onopen = function (event) {
                 appendLog("drone in connection opened", droneLogElement);
             };
