@@ -3,7 +3,7 @@
 # enable job control
 set -m
 
-node . &
+npm start &
 firefox client.html
 
 fg 1
