@@ -2,17 +2,38 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <style>
+        html {
+            font-family: monospace
+        }
+
+        .logElement {
+            float: left;
+            overflow: auto;
+            border: 1px solid black;
+            padding: 10px;
+            margin: 10px;
+            max-height: 400px;
+            min-width: 300px;
+        }
+
+        .logElement ul {
+            padding-left: 0px;
+            margin-left: 5px;
+        }
+
+    </style>
 </head>
 
 <body>
     <div>
-        <div style="float: left;">
+        <div class="logElement">
             <h2>Client</h2>
             <ul id="clientLog">
             </ul>
         </div>
 
-        <div style="float: left;">
+        <div class="logElement">
             <h2>Drone</h2>
             <ul id="droneLog">
             </ul>
@@ -20,6 +41,23 @@
     </div>
 
     <script type="text/javascript">
+        class KeyPressMonitor {
+            constructor() {
+                this.keyDownSet = new Set();
+            }
+
+            keyDown(keyCode, callIfInitialKeyDown) {
+                if (!this.keyDownSet.has(keyCode)) {
+                    callIfInitialKeyDown();
+                    this.keyDownSet.add(keyCode);
+                }
+            }
+
+            keyUp(keyCode) {
+                this.keyDownSet.delete(keyCode);
+            }
+        }
+
         window.onload = function (e) {
             console.log("started");
             var clientLogElement = document.getElementById("clientLog");
@@ -27,6 +65,8 @@
 
             var appendLog = function(message, logElement) {
                 logElement.insertAdjacentHTML('beforeend', '<li>' + message + '</li>');
+                parentElement = logElement.parentElement;
+                parentElement.scrollTo(0, parentElement.scrollHeight);
             };
 
             var socketClientOut = new WebSocket("ws:localhost:8080");
@@ -46,11 +86,34 @@
                 appendLog("Received: " + event.data, droneLogElement);
             };
 
-            setInterval(function() {
-                var msg = "" + Math.random();
-                appendLog("Sending: " + msg, clientLogElement);
-                socketClientOut.send(msg);
-            }, 2000);
+            const keyPressMonitor = new KeyPressMonitor();
+
+            document.onkeydown = function(evt) {
+                evt = evt || window.event;
+                var keyCode = (typeof evt.which == "number") ? evt.which : evt.keyCode;
+
+                if (keyCode) {
+                    keyPressMonitor.keyDown(keyCode, function() {
+                        socketClientOut.send(JSON.stringify({
+                                keyCode: keyCode,
+                                delta: "down"
+                            }));
+                    });
+                }
+            };
+
+            document.onkeyup = function(evt) {
+                evt = evt || window.event;
+                var keyCode = (typeof evt.which == "number") ? evt.which : evt.keyCode;
+
+                if (keyCode) {
+                    keyPressMonitor.keyUp(keyCode);
+                    socketClientOut.send(JSON.stringify({
+                            keyCode: keyCode,
+                            delta: "up"
+                        }));
+                }
+            };
         };
     </script>
 </body>
