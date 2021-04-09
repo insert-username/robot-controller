@@ -103,8 +103,8 @@ class CommandController:
         return int(command_byte, 2)
 
 
-# i2c_arduino_addr = 0x8
-# i2c_bus = SMBus(1)
+i2c_arduino_addr = 0x8
+i2c_bus = SMBus(1)
 
 command_controller = CommandController()
 
@@ -117,7 +117,12 @@ async def connect():
             command_controller.accept_message(message)
             command_byte = command_controller.get_command_byte()
 
-            #i2c_bus.write_byte(i2c_arduino_addr, command_byte)
+            print("Command byte: " + str(command_byte))
+
+            try:
+                i2c_bus.write_byte(i2c_arduino_addr, command_byte)
+            except:
+                print("IO Error, got a loose wire? :p")
 
 asyncio.get_event_loop().run_until_complete(connect())
 
