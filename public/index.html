@@ -77,6 +77,9 @@
             var socketClientOut = new WebSocket(url);
             socketClientOut.onopen = function (event) {
                 appendLog("connection opened", clientLogElement);
+
+                const keepAlive = JSON.stringify({ keepAlive: true });
+                setInterval(() => socketClientOut.send(keepAlive), 5000);
             };
             socketClientOut.onmessage = function (event) {
                 appendLog("Received: " + event.data, clientLogElement);
@@ -100,6 +103,7 @@
                 if (keyCode) {
                     keyPressMonitor.keyDown(keyCode, function() {
                         socketClientOut.send(JSON.stringify({
+                                droneCommand: 1,
                                 keyCode: keyCode,
                                 delta: "down"
                             }));

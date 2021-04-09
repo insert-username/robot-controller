@@ -13,12 +13,21 @@ const wsServer = new ws.Server({ server: expressServer });
 
 wsServer.on('connection', function connection(socket) {
     socket.on('message', data => {
-        wsServer.clients
-            .forEach(client => {
-                if (client != socket) {
-                    client.send(data);
-                }
-            });
+
+        const messageObject = JSON.parse(data);
+
+        if (messageObject.keepAlive) {
+            return; // just keeps connection open.
+        }
+
+        if (messageObject.droneCommand) {
+            wsServer.clients
+                .forEach(client => {
+                    if (client != socket) {
+                        client.send(data);
+                    }
+                });
+        }
     });
 });
 
