@@ -39,7 +39,7 @@ window.onload = function (e) {
             if (keyCode) {
                 keyPressMonitor.keyDown(keyCode, function() {
                     socketClientOut.send(JSON.stringify({
-                            droneCommand: 1,
+                            droneCommand: true,
                             keyCode: keyCode,
                             delta: "down"
                         }));
@@ -58,6 +58,7 @@ window.onload = function (e) {
             if (keyCode) {
                 keyPressMonitor.keyUp(keyCode);
                 socketClientOut.send(JSON.stringify({
+                        droneCommand: true,
                         keyCode: keyCode,
                         delta: "up"
                     }));
