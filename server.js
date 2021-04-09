@@ -23,9 +23,7 @@ wsServer.on('connection', function connection(socket) {
         if (messageObject.droneCommand) {
             wsServer.clients
                 .forEach(client => {
-                    if (client != socket) {
-                        client.send(data);
-                    }
+                    client.send(data);
                 });
         }
     });
