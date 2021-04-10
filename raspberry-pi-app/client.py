@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import asyncio
 import websockets
 import json
@@ -103,14 +104,25 @@ class CommandController:
         return int(command_byte, 2)
 
 
-i2c_arduino_addr = 0x8
-i2c_bus = SMBus(1)
+argument_parser = argparse.ArgumentParser(description='Start forwarding drone commands to i2c bus.')
+argument_parser.add_argument('--dry-run', action='store_true', default=False)
+argument_parser.add_argument('--server-uri', required=True, help="URI of the forwarding server.")
+arguments = argument_parser.parse_args()
+
+i2c_bus = None
+if (not arguments.dry_run):
+    i2c_arduino_addr = 0x8
+    i2c_bus = SMBus(1)
+else:
+    print("Dry Run: no i2c connection will be made.")
 
 command_controller = CommandController()
 
+print("Starting...")
+
 async def connect():
-    uri = "ws://limitless-wildwood-48190.herokuapp.com:80"
-    async with websockets.connect(uri) as ws:
+    print("Attempting to connect to server uri: " + arguments.server_uri)
+    async with websockets.connect(arguments.server_uri) as ws:
         print("Connected!")
         async for message in ws:
             print(message)
@@ -119,10 +131,11 @@ async def connect():
 
             print("Command byte: " + str(command_byte))
 
-            try:
-                i2c_bus.write_byte(i2c_arduino_addr, command_byte)
-            except:
-                print("IO Error, got a loose wire? :p")
+            if (i2c_bus):
+                try:
+                    i2c_bus.write_byte(i2c_arduino_addr, command_byte)
+                except:
+                    print("IO Error, got a loose wire? :p")
 
 asyncio.get_event_loop().run_until_complete(connect())
 
